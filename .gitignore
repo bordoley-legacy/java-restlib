@@ -1,0 +1,15 @@
+*.DS_Store/
+*.metatdata/
+*.jar
+*/bin/
+*.class
+.metadata/
+*.orig
+*/target/
+target/
+*.classpath
+*.project
+*.settings
+*.iml
+*.idea
+dist/*
