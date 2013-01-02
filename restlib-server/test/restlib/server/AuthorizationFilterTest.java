@@ -78,7 +78,8 @@ public final class AuthorizationFilterTest {
                 Resources.authorizedResource(MOCK_RESOURCE, ImmutableList.<Authorizer> of());
         
         final Response noAuthorizationFiltersResponse =
-                noAuthorizationFilter.handle(Request.builder().build()).get();      
+                noAuthorizationFilter.handle(
+                        Request.builder().setUri(Uri.parse("http://www.example.com")).build()).get();      
         assertEquals(
                 Status.CLIENT_ERROR_FORBIDDEN, 
                 noAuthorizationFiltersResponse.status());

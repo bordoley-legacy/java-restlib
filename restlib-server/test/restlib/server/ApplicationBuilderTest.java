@@ -217,6 +217,7 @@ public final class ApplicationBuilderTest {
         assertEquals(resource, 
                 ApplicationBuilder.newInstance()
                     .setErrorResource(resource)
-                    .build().getResource(Request.builder().build()));
+                    .build().getResource(
+                            Request.builder().setUri(Uri.parse("http://www.example.com")).build()));
     }
 }

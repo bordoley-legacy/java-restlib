@@ -46,7 +46,10 @@ public final class BasicAuthorizerTest {
 
     @Test            
     public void authorizeTest() throws InterruptedException, ExecutionException { 
-        assertEquals(Status.CLIENT_ERROR_UNAUTHORIZED, MOCK_AUTHORIZER.authenticate(Request.builder().build()).get().status());
+        assertEquals(
+                Status.CLIENT_ERROR_UNAUTHORIZED, 
+                MOCK_AUTHORIZER.authenticate(
+                        Request.builder().setUri(Uri.parse("http://www.example.com")).build()).get().status());
         
         final Request request = 
                 Request.builder()

@@ -19,6 +19,8 @@ package restlib.server;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.concurrent.ExecutionException;
+
 import org.junit.Test;
 
 import restlib.Request;
@@ -62,13 +64,13 @@ public final class ResourceWrapperTest {
     }
     
     @Test
-    public void handle_getRequest_successOK() {
+    public void handle_getRequest_successOK() throws InterruptedException, ExecutionException {
         final Request request = 
                 Request.builder()
+                    .setUri(Uri.parse("http://www.example.com"))
                     .setMethod(Method.GET)
                     .build();
-        assertEquals(MOCK_RESOURCE.handle(request), 
-                WRAPPED_RESOURCE.handle(request));
+        assertEquals(MOCK_RESOURCE.handle(request).get(),  WRAPPED_RESOURCE.handle(request).get());
     }
     
     @Test

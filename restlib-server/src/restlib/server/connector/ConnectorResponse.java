@@ -62,7 +62,7 @@ public abstract class ConnectorResponse {
             this.addHeader(HttpHeaders.LAST_MODIFIED, response.lastModified().get());
         }
 
-        if (!response.location().isPresent()) {
+        if (response.location().isPresent()) {
             this.addHeader(HttpHeaders.LOCATION, response.location().get());
         }
 

@@ -30,6 +30,7 @@ import restlib.Request;
 import restlib.Response;
 import restlib.bio.InputStreamDeserializer;
 import restlib.bio.OutputStreamSerializer;
+import restlib.net.Uri;
 import restlib.server.FutureResponses;
 import restlib.server.Route;
 
@@ -88,18 +89,24 @@ public final class BioResourceWrapperTest {
     @Test
     public void getRequestEntityDeserializerTest() {
         final InputStreamDeserializer<?> resourceDeserializer = 
-                MOCK_RESOURCE.getRequestEntityDeserializer(Request.builder().build());
+                MOCK_RESOURCE.getRequestEntityDeserializer(
+                        Request.builder().setUri(Uri.parse("http://www.example.com")).build());
         final InputStreamDeserializer<?> wrapperDeserializer =
-                MOCK_WRAPPER.getRequestEntityDeserializer(Request.builder().build());
+                MOCK_WRAPPER.getRequestEntityDeserializer(
+                        Request.builder().setUri(Uri.parse("http://www.example.com")).build());
         assertEquals(resourceDeserializer, wrapperDeserializer);
     }
     
     @Test
     public void getResponseEntitySerializerTest() {
         final OutputStreamSerializer resourceSerializer = 
-                MOCK_RESOURCE.getResponseEntitySerializer(Request.builder().build(), Response.builder().build());
+                MOCK_RESOURCE.getResponseEntitySerializer(
+                        Request.builder().setUri(Uri.parse("http://www.example.com")).build(), 
+                        Response.builder().build());
         final OutputStreamSerializer wrapperSerializer =
-                MOCK_WRAPPER.getResponseEntitySerializer(Request.builder().build(), Response.builder().build());
+                MOCK_WRAPPER.getResponseEntitySerializer(
+                        Request.builder().setUri(Uri.parse("http://www.example.com")).build(), 
+                        Response.builder().build());
         assertEquals(resourceSerializer, wrapperSerializer);
     }
     

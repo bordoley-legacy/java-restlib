@@ -96,7 +96,9 @@ public final class ApplicationWrapperTest {
     
     @Test
     public void filterRequestTest() {
-        assertEquals(FILTERED_REQUEST, WRAPPED_APPLICATION.requestFilter().apply(Request.builder().build()));
+        assertEquals(FILTERED_REQUEST, 
+                WRAPPED_APPLICATION.requestFilter().apply(
+                        Request.builder().setUri(Uri.parse("http://www.example.com")).build()));
     }
     
     @Test
@@ -106,6 +108,8 @@ public final class ApplicationWrapperTest {
     
     @Test
     public void getResourceTest() {
-        assertEquals(MOCK_RESOURCE, WRAPPED_APPLICATION.getResource(Request.builder().build()));
+        assertEquals(MOCK_RESOURCE, 
+                WRAPPED_APPLICATION.getResource(
+                        Request.builder().setUri(Uri.parse("http://www.example.com")).build()));
     }
 }

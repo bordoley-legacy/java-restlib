@@ -59,12 +59,14 @@ public final class UniformResourceTest {
     
     @Test(expected = IllegalArgumentException.class)
     public void acceptMessage_withInvalidMessageClass() {
-       new MockUniformResource().acceptMessage(Request.builder().build(), new Object());
+       new MockUniformResource().acceptMessage(
+               Request.builder().setUri(Uri.parse("http://www.example.com")).build(), new Object());
     }
     
     @Test(expected = NullPointerException.class)
     public void acceptMessage_withNullObject() {
-       new MockUniformResource().acceptMessage(Request.builder().build(), null);
+       new MockUniformResource().acceptMessage(
+               Request.builder().setUri(Uri.parse("http://www.example.com")).build(), null);
     }
     
     @Test(expected = NullPointerException.class)

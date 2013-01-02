@@ -149,6 +149,7 @@ public final class ConnegResourceDecoratorTest {
     public void handle_getRequestUnsupportedResponseContentType_notAcceptableResponse() throws InterruptedException, ExecutionException {
         final Request request =
                 Request.builder()
+                    .setUri(Uri.parse("http://www.example.com"))
                     .setMethod(Method.GET)
                     .build();
         final Response response = RESOURCE.handle(request).get();
@@ -187,7 +188,9 @@ public final class ConnegResourceDecoratorTest {
             }     
         };
         
-        final Response response = resource.handle(Request.builder().build()).get();
+        final Response response = 
+                resource.handle(
+                        Request.builder().setUri(Uri.parse("http://www.example.com")).build()).get();
         assertEquals(Status.CLIENT_ERROR_BAD_REQUEST, response.status());
     }
 }
