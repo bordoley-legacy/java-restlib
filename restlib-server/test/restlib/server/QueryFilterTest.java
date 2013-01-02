@@ -170,7 +170,7 @@ public final class QueryFilterTest {
                     .build();
         
         final Request filteredRequest = TEST_FILTER_ALL_HEADERS_ALLOWED.apply(request);
-        assertEquals(authorization, filteredRequest.authorizationCredentials().toString());
+        assertEquals(authorization, filteredRequest.authorizationCredentials().get().toString());
     }
     
     @Test
@@ -201,7 +201,7 @@ public final class QueryFilterTest {
                     .setUri(Uri.parse("http://example.com"))
                     .build();
         final Request filteredRequest = TEST_FILTER_ALL_HEADERS_ALLOWED.apply(request);
-        assertEquals(request, filteredRequest);
+        assertEquals(request.uri(), filteredRequest.uri());
     }
     
     @Test

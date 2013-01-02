@@ -66,7 +66,7 @@ public final class ApplicationBuilderTest {
                     .build();
         final Request filteredRequest = application.requestFilter().apply(request);
         
-        assertEquals("BASIC ABCD", filteredRequest.authorizationCredentials().toString());
+        assertEquals("BASIC ABCD", filteredRequest.authorizationCredentials().get().toString());
         assertTrue(
                  filteredRequest.preferences().acceptedMediaRanges().contains(
                          Preference.create(MediaRanges.APPLICATION_JSON,1)));
@@ -186,7 +186,7 @@ public final class ApplicationBuilderTest {
                     .build();
         
         final Response filteredResponse = application.responseFilter().apply(response);
-        assertEquals(Uri.parse("https://www.example.com/"), filteredResponse.location());
+        assertEquals(Uri.parse("https://www.example.com/"), filteredResponse.location().get());
         assertEquals(ImmutableSet.of(Method.GET, Method.POST), filteredResponse.allowedMethods());
     }
     

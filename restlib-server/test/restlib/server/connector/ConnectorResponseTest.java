@@ -73,6 +73,7 @@ import restlib.data.TransferCoding;
 import restlib.data.UserAgent;
 import restlib.data.Via;
 import restlib.data.Warning;
+import restlib.impl.Optionals;
 import restlib.net.HostPort;
 import restlib.net.Uri;
 
@@ -161,7 +162,7 @@ public final class ConnectorResponseTest {
                 connectorResponse.getHeader(VIA));
         
         assertEquals(
-                response.contentInfo().mediaRange().toString(), 
+                Optionals.toStringOrEmpty(response.contentInfo().mediaRange()), 
                 connectorResponse.getHeader(CONTENT_TYPE));
         
         assertEquals(
@@ -183,27 +184,31 @@ public final class ConnectorResponseTest {
                 response.contentInfo().length(), contentlength);
         
         assertEquals(
-                response.contentInfo().location().toString(), 
+                Optionals.toStringOrEmpty(response.contentInfo().location()), 
                 connectorResponse.getHeader(CONTENT_LOCATION));
         
         assertEquals(
-                response.contentInfo().range().toString(), 
+                Optionals.toStringOrEmpty(response.contentInfo().range()), 
                 connectorResponse.getHeader(CONTENT_RANGE));
              
-        assertEquals(response.date().toString(), 
+        assertEquals(
+                Optionals.toStringOrEmpty(response.date()), 
                 connectorResponse.getHeader(DATE));
         
-        assertEquals(response.entityTag().toString(), 
+        assertEquals(
+                Optionals.toStringOrEmpty(response.entityTag()), 
                 connectorResponse.getHeader(ENTITY_TAG));
         
-        assertEquals(response.expires().toString(), 
+        assertEquals(
+                Optionals.toStringOrEmpty(response.expires()), 
                 connectorResponse.getHeader(EXPIRES));
         
-        assertEquals(response.lastModified().toString(), 
+        assertEquals(
+                Optionals.toStringOrEmpty(response.lastModified()), 
                 connectorResponse.getHeader(LAST_MODIFIED));
         
         assertEquals(
-                response.location().toString(), 
+                Optionals.toStringOrEmpty(response.location()), 
                 connectorResponse.getHeader(LOCATION));
         
         assertEquals(
@@ -211,11 +216,12 @@ public final class ConnectorResponseTest {
                         response.proxyAuthenticationChallenge()), 
                 connectorResponse.getHeader(PROXY_AUTHENTICATE));
         
-        assertEquals(response.retryAfterDate().toString(), 
+        assertEquals(
+                Optionals.toStringOrEmpty(response.retryAfterDate()), 
                 connectorResponse.getHeader(RETRY_AFTER));
         
         assertEquals(
-                response.server().toString(), 
+                Optionals.toStringOrEmpty(response.server()), 
                 connectorResponse.getHeader(SERVER));
         
         assertEquals(

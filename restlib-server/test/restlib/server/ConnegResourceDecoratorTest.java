@@ -191,6 +191,6 @@ public final class ConnegResourceDecoratorTest {
         final Response response = 
                 resource.handle(
                         Request.builder().setUri(Uri.parse("http://www.example.com")).build()).get();
-        assertEquals(Status.CLIENT_ERROR_BAD_REQUEST, response.status());
+        assertEquals(Status.CLIENT_ERROR_NOT_FOUND, response.status());
     }
 }

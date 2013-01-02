@@ -62,28 +62,6 @@ public final class AuthorizationFilterTest {
                 public ListenableFuture<Response> handle(Request request) {
                     return FutureResponses.SUCCESS_OK;
                 }};
-                
-                
-    @Test(expected = NullPointerException.class)
-    public void handle_withNull() {
-        final Resource filter =
-                Resources.authorizedResource(
-                        MOCK_RESOURCE, ImmutableList.<Authorizer> of());
-        filter.handle(null);
-    }
-    
-    @Test
-    public void handle_withNoAuthorizationFiltersOrResources_clientErrorNotFound() throws InterruptedException, ExecutionException {
-        final Resource noAuthorizationFilter =
-                Resources.authorizedResource(MOCK_RESOURCE, ImmutableList.<Authorizer> of());
-        
-        final Response noAuthorizationFiltersResponse =
-                noAuthorizationFilter.handle(
-                        Request.builder().setUri(Uri.parse("http://www.example.com")).build()).get();      
-        assertEquals(
-                Status.CLIENT_ERROR_FORBIDDEN, 
-                noAuthorizationFiltersResponse.status());
-    }
     
     @Test
     public void handle_withBasicAuthorization_successOK() throws InterruptedException, ExecutionException {
