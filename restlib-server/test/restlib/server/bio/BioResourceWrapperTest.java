@@ -30,10 +30,10 @@ import restlib.Request;
 import restlib.Response;
 import restlib.bio.InputStreamDeserializer;
 import restlib.bio.OutputStreamSerializer;
-import restlib.data.Status;
+import restlib.server.FutureResponses;
 import restlib.server.Route;
-import restlib.server.bio.BioResource;
-import restlib.server.bio.BioResourceWrapper;
+
+import com.google.common.util.concurrent.ListenableFuture;
 
 public final class BioResourceWrapperTest {
     private static final BioResource<String> MOCK_RESOURCE =
@@ -58,8 +58,8 @@ public final class BioResourceWrapperTest {
                             }};
                             
                 @Override
-                public Response acceptMessage(Request request, Object message) {
-                    return Status.SUCCESS_OK.toResponse();
+                public ListenableFuture<Response> acceptMessage(Request request, Object message) {
+                    return FutureResponses.SUCCESS_OK;
                 }
 
                 @Override
@@ -68,8 +68,8 @@ public final class BioResourceWrapperTest {
                 }
 
                 @Override
-                public Response handle(Request request) {
-                    return Status.SUCCESS_OK.toResponse();
+                public ListenableFuture<Response> handle(Request request) {
+                    return FutureResponses.SUCCESS_OK;
                 }
 
                 @Override
