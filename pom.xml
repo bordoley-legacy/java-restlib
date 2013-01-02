@@ -64,7 +64,6 @@
     </developers>
 
     <modules>
-        <module>restlib-test</module>
         <module>restlib-core</module>
         <module>restlib-bio-multipart</module>
         <module>restlib-bio</module>
@@ -74,7 +73,6 @@
         <module>restlib-ext-jackson</module>
         <module>restlib-ext-protobuf</module>
         <module>restlib-ext-servlet</module>
-        <module>restlib-ext-netty-3.5</module>
         <module>restlib-example</module>
     </modules>
 
