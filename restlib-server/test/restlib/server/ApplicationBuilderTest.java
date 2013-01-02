@@ -31,13 +31,13 @@ import restlib.data.HttpHeaders;
 import restlib.data.MediaRanges;
 import restlib.data.Method;
 import restlib.data.Preference;
-import restlib.data.Status;
 import restlib.net.Uri;
 
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.util.concurrent.ListenableFuture;
 
 public final class ApplicationBuilderTest {  
     @Test(expected = NullPointerException.class)
@@ -86,8 +86,8 @@ public final class ApplicationBuilderTest {
             private final Route route = Route.parse("/a/:a");
             
             @Override
-            public Response acceptMessage(final Request request, final Object message) {
-                return Status.SUCCESS_OK.toResponse();
+            public ListenableFuture<Response> acceptMessage(final Request request, final Object message) {
+                return FutureResponses.SUCCESS_OK;
             }
 
             @Override
@@ -96,8 +96,8 @@ public final class ApplicationBuilderTest {
             }
 
             @Override
-            public Response handle(Request request) {
-                return Status.SUCCESS_OK.toResponse();
+            public ListenableFuture<Response> handle(Request request) {
+                return FutureResponses.SUCCESS_OK;
             }     
         };
         
@@ -105,8 +105,8 @@ public final class ApplicationBuilderTest {
             private final Route route = Route.parse("/b/:a/*c");
             
             @Override
-            public Response acceptMessage(final Request request, final Object message) {
-                return Status.SUCCESS_OK.toResponse();
+            public ListenableFuture<Response> acceptMessage(final Request request, final Object message) {
+                return FutureResponses.SUCCESS_OK;
             }
 
             @Override
@@ -115,8 +115,8 @@ public final class ApplicationBuilderTest {
             }
 
             @Override
-            public Response handle(Request request) {
-                return Status.SUCCESS_OK.toResponse();
+            public ListenableFuture<Response> handle(Request request) {
+                return FutureResponses.SUCCESS_OK;
             }     
         };
         
@@ -199,8 +199,8 @@ public final class ApplicationBuilderTest {
     public void setErrorResourceTest() {
         final Resource resource = new Resource() {
             @Override
-            public Response acceptMessage(Request request, Object message) {
-                return Response.builder().build();
+            public ListenableFuture<Response> acceptMessage(Request request, Object message) {
+                return FutureResponses.SUCCESS_OK;
             }
 
             @Override
@@ -209,8 +209,8 @@ public final class ApplicationBuilderTest {
             }
 
             @Override
-            public Response handle(Request request) {
-                return Response.builder().build();
+            public ListenableFuture<Response> handle(Request request) {
+                return FutureResponses.SUCCESS_OK;
             }         
         };
         

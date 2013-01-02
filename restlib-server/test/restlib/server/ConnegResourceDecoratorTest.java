@@ -21,6 +21,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import org.junit.Test;
 
@@ -38,23 +39,24 @@ import restlib.net.Uri;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
+import com.google.common.util.concurrent.ListenableFuture;
 
 public final class ConnegResourceDecoratorTest {   
     private static class MockSuccessResource implements Resource {
-        public Response acceptMessage(Request request, Object message) {
-            return Status.SUCCESS_OK.toResponse();
+        public ListenableFuture<Response> acceptMessage(Request request, Object message) {
+            return FutureResponses.SUCCESS_OK;
         }
 
         public Route route() {
             return Route.NONE;
         }
 
-        public Response handle(Request request) {
+        public ListenableFuture<Response> handle(Request request) {
             if (request.method().equals(Method.POST) ||
                     request.method().equals(Method.PUT)) { 
-                return Status.INFORMATIONAL_CONTINUE.toResponse();
+                return FutureResponses.INFORMATIONAL_CONTINUE;
             } else {
-                return Status.SUCCESS_OK.toResponse();
+                return FutureResponses.SUCCESS_OK;
             }
         }   
     }
@@ -93,7 +95,7 @@ public final class ConnegResourceDecoratorTest {
     private static final ConnegResourceDecorator RESOURCE = new MockConnegResource();    
     
     @Test 
-    public void acceptMessage_putRequest_successOK() {
+    public void acceptMessage_putRequest_successOK() throws InterruptedException, ExecutionException {
         final Request request =
                 Request.builder()
                     .setUri(Uri.parse("http://www.example.com"))
@@ -103,11 +105,11 @@ public final class ConnegResourceDecoratorTest {
                                 .setMediaRange(MediaRanges.APPLICATION_ATOM)
                                 .build())
                      .build();
-       assertEquals(Status.SUCCESS_OK, RESOURCE.acceptMessage(request, "").status());             
+       assertEquals(Status.SUCCESS_OK, RESOURCE.acceptMessage(request, "").get().status());             
     }
     
     @Test
-    public void handle_postRequestUnsuportedMessageType_unsupportedMediaTypeResponse() {
+    public void handle_postRequestUnsuportedMessageType_unsupportedMediaTypeResponse() throws InterruptedException, ExecutionException {
         final ContentInfo contentInfo =
                 ContentInfo.builder()
                     .setMediaRange(MediaRanges.APPLICATION_XML)
@@ -118,13 +120,13 @@ public final class ConnegResourceDecoratorTest {
                     .setMethod(Method.POST)
                     .setContentInfo(contentInfo)
                     .build();
-        final Response response = RESOURCE.handle(request);
+        final Response response = RESOURCE.handle(request).get();
         
         assertEquals(Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE, response.status());
     }
     
     @Test
-    public void handle_postRequestSupportedMessageTypeSupportedResponseType_informationalContinue() {
+    public void handle_postRequestSupportedMessageTypeSupportedResponseType_informationalContinue() throws InterruptedException, ExecutionException {
         final Request request =
                 Request.builder()
                     .setUri(Uri.parse("http://www.example.com"))
@@ -139,23 +141,23 @@ public final class ConnegResourceDecoratorTest {
                                 .setMediaRange(MediaRanges.APPLICATION_ATOM)
                                 .build())
                     .build();
-        final Response response = RESOURCE.handle(request);
+        final Response response = RESOURCE.handle(request).get();
         assertEquals(Status.INFORMATIONAL_CONTINUE, response.status());
     }
     
     @Test
-    public void handle_getRequestUnsupportedResponseContentType_notAcceptableResponse() {
+    public void handle_getRequestUnsupportedResponseContentType_notAcceptableResponse() throws InterruptedException, ExecutionException {
         final Request request =
                 Request.builder()
                     .setMethod(Method.GET)
                     .build();
-        final Response response = RESOURCE.handle(request);
+        final Response response = RESOURCE.handle(request).get();
         assertEquals(Status.CLIENT_ERROR_NOT_ACCEPTABLE, response.status());
         assertTrue(isValidConnegResponse(response));
     }
     
     @Test
-    public void handle_getRequest_successOK() {
+    public void handle_getRequest_successOK() throws InterruptedException, ExecutionException {
         final Request request =
                 Request.builder()
                     .setUri(Uri.parse("http://www.example.com"))
@@ -166,13 +168,13 @@ public final class ConnegResourceDecoratorTest {
                                         Preference.create(MediaRanges.APPLICATION_JSON, 1000))
                                 .build())
                     .build();
-        final Response response = RESOURCE.handle(request);
+        final Response response = RESOURCE.handle(request).get();
         assertEquals(Status.SUCCESS_OK, response.status());
         assertTrue(isValidConnegResponse(response));
     }
     
     @Test
-    public void handle_getRequestNotFoundResource_notFound() {
+    public void handle_getRequestNotFoundResource_notFound() throws InterruptedException, ExecutionException {
         final ConnegResource resource = new ConnegResourceDecorator(Resources.NOT_FOUND) {
             @Override
             public Iterable<MediaRange> acceptedMediaRanges() {
@@ -185,7 +187,7 @@ public final class ConnegResourceDecoratorTest {
             }     
         };
         
-        final Response response = resource.handle(Request.builder().build());
+        final Response response = resource.handle(Request.builder().build()).get();
         assertEquals(Status.CLIENT_ERROR_BAD_REQUEST, response.status());
     }
 }

@@ -20,7 +20,8 @@ package restlib.server;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import org.apache.commons.codec.binary.Base64;
+import java.util.concurrent.ExecutionException;
+
 import org.junit.Test;
 
 import restlib.Request;
@@ -31,23 +32,25 @@ import restlib.net.Uri;
 
 import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableList;
+import com.google.common.io.BaseEncoding;
+import com.google.common.util.concurrent.ListenableFuture;
 
 
 public final class AuthorizationFilterTest {
     private static final Authorizer MOCK_BASIC_AUTHORIZER =
             new BasicAuthorizer("www.example.com") {
                 @Override
-                protected Response authenticate(final Request request, final String user, final String pwd) {
+                protected ListenableFuture<Response> authenticate(final Request request, final String user, final String pwd) {
                     return user.equals(pwd) ? 
-                            Status.SUCCESS_OK.toResponse() :
-                                Status.CLIENT_ERROR_UNAUTHORIZED.toResponse();
+                            FutureResponses.SUCCESS_OK :
+                                FutureResponses.CLIENT_ERROR_UNAUTHORIZED;
                 }};
                 
     private static final Resource MOCK_RESOURCE =
             new Resource() {
                 @Override
-                public Response acceptMessage(Request request, Object message) {
-                    return Status.SUCCESS_OK.toResponse();
+                public ListenableFuture<Response> acceptMessage(Request request, Object message) {
+                    return FutureResponses.SUCCESS_OK;
                 }
 
                 @Override
@@ -56,8 +59,8 @@ public final class AuthorizationFilterTest {
                 }
 
                 @Override
-                public Response handle(Request request) {
-                    return Status.SUCCESS_OK.toResponse();
+                public ListenableFuture<Response> handle(Request request) {
+                    return FutureResponses.SUCCESS_OK;
                 }};
                 
                 
@@ -70,19 +73,19 @@ public final class AuthorizationFilterTest {
     }
     
     @Test
-    public void handle_withNoAuthorizationFiltersOrResources_clientErrorNotFound() {
+    public void handle_withNoAuthorizationFiltersOrResources_clientErrorNotFound() throws InterruptedException, ExecutionException {
         final Resource noAuthorizationFilter =
                 Resources.authorizedResource(MOCK_RESOURCE, ImmutableList.<Authorizer> of());
         
         final Response noAuthorizationFiltersResponse =
-                noAuthorizationFilter.handle(Request.builder().build());      
+                noAuthorizationFilter.handle(Request.builder().build()).get();      
         assertEquals(
                 Status.CLIENT_ERROR_FORBIDDEN, 
                 noAuthorizationFiltersResponse.status());
     }
     
     @Test
-    public void handle_withBasicAuthorization_successOK() {
+    public void handle_withBasicAuthorization_successOK() throws InterruptedException, ExecutionException {
         final Resource basicAuthorizationFilter =
                 Resources.authorizedResource(
                         MOCK_RESOURCE, ImmutableList.<Authorizer> of(MOCK_BASIC_AUTHORIZER));
@@ -93,11 +96,11 @@ public final class AuthorizationFilterTest {
                     .setAuthorizationCredentials(
                             ChallengeMessage
                                 .base64ChallengeMessage("Basic", 
-                                    Base64.encodeBase64String(
+                                        BaseEncoding.base64().encode(
                                             "test:test".getBytes(Charsets.UTF_8))))
                     .build();
         final Response basicAuthorizationFilterSuccessResponse =
-                basicAuthorizationFilter.handle(basicSuccessRequest);
+                basicAuthorizationFilter.handle(basicSuccessRequest).get();
         assertEquals(
                     Status.SUCCESS_OK,
                     basicAuthorizationFilterSuccessResponse.status());
@@ -105,7 +108,7 @@ public final class AuthorizationFilterTest {
     
     
     @Test
-    public void handle_withBasicAuthorization_clientErrorUnauthorized() {
+    public void handle_withBasicAuthorization_clientErrorUnauthorized() throws InterruptedException, ExecutionException {
         final Resource basicAuthorizationFilter =
                 Resources.authorizedResource(MOCK_RESOURCE, ImmutableList.of(MOCK_BASIC_AUTHORIZER));
         
@@ -115,11 +118,11 @@ public final class AuthorizationFilterTest {
                     .setAuthorizationCredentials(
                             ChallengeMessage.
                                 base64ChallengeMessage("Basic",
-                                    Base64.encodeBase64String(
+                                    BaseEncoding.base64().encode(
                                             "test:fail".getBytes(Charsets.UTF_8))))
                     .build();
         final Response basicAuthorizationFilterFailResponse =
-                basicAuthorizationFilter.handle(basicFailRequest);
+                basicAuthorizationFilter.handle(basicFailRequest).get();
         assertEquals(
                     Status.CLIENT_ERROR_UNAUTHORIZED,
                     basicAuthorizationFilterFailResponse.status());

@@ -24,15 +24,16 @@ import org.junit.Test;
 import restlib.Request;
 import restlib.Response;
 import restlib.data.Method;
-import restlib.data.Status;
 import restlib.net.Uri;
+
+import com.google.common.util.concurrent.ListenableFuture;
 
 public final class ResourceWrapperTest {
     private static final Resource MOCK_RESOURCE = 
             new UniformResource<Object>(Object.class) {
         @Override
-        protected Response post(Request request, Object message) {
-            return Status.SUCCESS_OK.toResponse();
+        protected ListenableFuture<Response> post(Request request, Object message) {
+            return FutureResponses.SUCCESS_OK;
         }
 
         @Override
@@ -41,8 +42,8 @@ public final class ResourceWrapperTest {
         }
 
         @Override
-        protected Response get(Request request) {
-            return Status.SUCCESS_OK.toResponse();
+        protected ListenableFuture<Response> get(Request request) {
+            return FutureResponses.SUCCESS_OK;
         }    
     };
     

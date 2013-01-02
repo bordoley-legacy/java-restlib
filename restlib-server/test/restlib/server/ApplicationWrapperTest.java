@@ -29,6 +29,7 @@ import restlib.data.MediaRanges;
 import restlib.net.Uri;
 
 import com.google.common.base.Function;
+import com.google.common.util.concurrent.ListenableFuture;
 
 public final class ApplicationWrapperTest {
     private static final Request FILTERED_REQUEST = 
@@ -48,8 +49,8 @@ public final class ApplicationWrapperTest {
     
     private static final Resource MOCK_RESOURCE = new Resource() {
         @Override
-        public Response acceptMessage(Request request, Object message) {
-            return Response.builder().build();
+        public ListenableFuture<Response> acceptMessage(Request request, Object message) {
+            return FutureResponses.SUCCESS_OK;
         }
 
         @Override
@@ -58,8 +59,8 @@ public final class ApplicationWrapperTest {
         }
 
         @Override
-        public Response handle(Request request) {
-            return Response.builder().build();
+        public ListenableFuture<Response> handle(Request request) {
+            return FutureResponses.SUCCESS_OK;
         }      
     };
     

@@ -19,7 +19,8 @@ package restlib.server;
 
 import static org.junit.Assert.assertEquals;
 
-import org.apache.commons.codec.binary.Base64;
+import java.util.concurrent.ExecutionException;
+
 import org.junit.Test;
 
 import restlib.Request;
@@ -29,21 +30,23 @@ import restlib.data.Status;
 import restlib.net.Uri;
 
 import com.google.common.base.Charsets;
+import com.google.common.io.BaseEncoding;
+import com.google.common.util.concurrent.ListenableFuture;
 
 public final class BasicAuthorizerTest {
     private static final String realm = "www.example.org";
     private static final Authorizer MOCK_AUTHORIZER =
             new BasicAuthorizer(realm) {
                 @Override
-                protected Response authenticate(final Request request, final String user, final String pwd) {
+                protected ListenableFuture<Response> authenticate(final Request request, final String user, final String pwd) {
                     return user.equals(pwd) ? 
-                            Status.SUCCESS_OK.toResponse() :
-                                Status.CLIENT_ERROR_UNAUTHORIZED.toResponse();
+                            FutureResponses.SUCCESS_OK :
+                                FutureResponses.CLIENT_ERROR_UNAUTHORIZED;
                 }};
 
     @Test            
-    public void authorizeTest() { 
-        assertEquals(Status.CLIENT_ERROR_UNAUTHORIZED, MOCK_AUTHORIZER.authenticate(Request.builder().build()).status());
+    public void authorizeTest() throws InterruptedException, ExecutionException { 
+        assertEquals(Status.CLIENT_ERROR_UNAUTHORIZED, MOCK_AUTHORIZER.authenticate(Request.builder().build()).get().status());
         
         final Request request = 
                 Request.builder()
@@ -51,10 +54,10 @@ public final class BasicAuthorizerTest {
                     .setAuthorizationCredentials(
                             ChallengeMessage
                                 .base64ChallengeMessage("Basic",
-                                    Base64.encodeBase64String(
+                                    BaseEncoding.base64().encode(
                                             "test:test".getBytes(Charsets.UTF_8))))
                     .build();
-        assertEquals(Status.SUCCESS_OK, MOCK_AUTHORIZER.authenticate(request).status());
+        assertEquals(Status.SUCCESS_OK, MOCK_AUTHORIZER.authenticate(request).get().status());
     }
     
     @Test
