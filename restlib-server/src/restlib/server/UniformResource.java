@@ -4,9 +4,9 @@ import java.util.Set;
 
 import restlib.Request;
 import restlib.Response;
+import restlib.data.EntityTag;
 import restlib.data.Method;
 import restlib.data.Status;
-import restlib.impl.Optionals;
 
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
@@ -27,16 +27,35 @@ import com.google.common.util.concurrent.ListenableFuture;
  */
 public abstract class UniformResource<T> implements Resource {
     private static boolean unmodified(final Request request, final Response response) {
-        // Tag matching takes precedence over modification date.
-        if (request.preconditions().ifNoneMatchTags().contains(response.entityTag())) {
-            return true;   
-        } else if (Optionals.isAbsent(response.lastModified())) {
-            return false;
-        } else if (request.preconditions().ifModifiedSinceDate().isPresent() && response.lastModified().isPresent()){
-            return request.preconditions().ifModifiedSinceDate().get().compareTo(response.lastModified().get()) >= 0;
-        } else {
+        
+        // Not a conditional request
+        if (request.preconditions().ifNoneMatchTags().isEmpty() && 
+                !request.preconditions().ifModifiedSinceDate().isPresent()) {
             return false;
         }
+        
+        // Tag matching takes precedence over modification date.
+        if (!request.preconditions().ifNoneMatchTags().isEmpty() && 
+                response.entityTag().isPresent()) {
+            if ((response.entityTag().get() instanceof EntityTag.Strong) &&
+                    request.preconditions().ifNoneMatchTags().contains(response.entityTag().get())) {
+                return true;
+            } else {
+                final EntityTag strong = EntityTag.strongTag(response.entityTag().get().value());
+                if (request.preconditions().ifNoneMatchTags().contains(response.entityTag().get()) ||
+                    request.preconditions().ifNoneMatchTags().contains(strong)) {
+                    return true;
+                }
+            }
+        } 
+        
+        if (request.preconditions().ifModifiedSinceDate().isPresent() && response.lastModified().isPresent()) {
+            if (request.preconditions().ifModifiedSinceDate().get().compareTo(response.lastModified().get()) >= 0) {
+                return true;
+            }
+        } 
+    
+        return false;
     }
 
     private final Set<Method> allowedMethods;
@@ -89,35 +108,45 @@ public abstract class UniformResource<T> implements Resource {
     private ListenableFuture<Response> checkUpdateConditions(final Request request) {
         final ListenableFuture<Response> response = get(request);
         
-        return Futures.transform(response, new Function<Response, Response>() {
+        return Futures.transform(response, new AsyncFunction<Response, Response>() {
             @Override
-            public Response apply(final Response response) {      
+            public ListenableFuture<Response> apply(final Response response) {      
                 if (!response.status().statusClass().equals(Status.Class.SUCCESS)) {
-                    return response;
+                    return Futures.immediateFuture(response);
                 } 
                 
-                if (requireETagForUpdate()) {
-                    if (!request.preconditions().ifMatchTags().iterator().hasNext()) {
-                        return Status.CLIENT_ERROR_FORBIDDEN.toResponse();
-                    } else if (request.preconditions().ifMatchTags().contains(response.entityTag())) {
-                        return Status.INFORMATIONAL_CONTINUE.toResponse();
-                    } else {
-                        return Status.CLIENT_ERROR_PRECONDITION_FAILED.toResponse();
-                    }
+                if (requireETagForUpdate() && response.entityTag().isPresent()) {
+                    if (request.preconditions().ifMatchTags().isEmpty()) {
+                        return FutureResponses.CLIENT_ERROR_FORBIDDEN;
+                    } 
+                    
+                    if ((response.entityTag().get() instanceof EntityTag.Strong) &&
+                                request.preconditions().ifNoneMatchTags().contains(response.entityTag().get())) {
+                        return FutureResponses.INFORMATIONAL_CONTINUE;
+                    } 
+                    
+                    final EntityTag strong = EntityTag.strongTag(response.entityTag().get().value());
+                    if (request.preconditions().ifMatchTags().contains(response.entityTag().get()) ||
+                        request.preconditions().ifMatchTags().contains(strong)) {
+                        return FutureResponses.INFORMATIONAL_CONTINUE;
+                    } 
+                    
+                    return FutureResponses.CLIENT_ERROR_PRECONDITION_FAILED;
                 } 
                 
-                if (requireIfUnmodifiedSinceForUpdate()) {
-                    if (Optionals.isAbsent(request.preconditions().ifUnmodifiedSinceDate())) {
-                        return Status.CLIENT_ERROR_FORBIDDEN.toResponse();
-                    } else if (response.lastModified().isPresent() &&
-                            request.preconditions().ifUnmodifiedSinceDate().get().compareTo(response.lastModified().get()) >= 0) {                 
-                        return Status.INFORMATIONAL_CONTINUE.toResponse();
-                    } else {
-                        return Status.CLIENT_ERROR_PRECONDITION_FAILED.toResponse();
-                    }
+                if (requireIfUnmodifiedSinceForUpdate() && response.lastModified().isPresent()) {
+                    if (!request.preconditions().ifUnmodifiedSinceDate().isPresent()) {
+                        return FutureResponses.CLIENT_ERROR_FORBIDDEN;
+                    } 
+                    
+                    if (request.preconditions().ifUnmodifiedSinceDate().get().compareTo(response.lastModified().get()) >= 0) {                 
+                        return FutureResponses.INFORMATIONAL_CONTINUE;
+                    } 
+                    
+                    return FutureResponses.CLIENT_ERROR_PRECONDITION_FAILED;
                 } 
                 
-                return Status.INFORMATIONAL_CONTINUE.toResponse();
+                return FutureResponses.INFORMATIONAL_CONTINUE;
             }
         });
     }
