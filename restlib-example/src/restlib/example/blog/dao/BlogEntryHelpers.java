@@ -40,7 +40,7 @@ public final class BlogEntryHelpers {
     public static final BlogEntry fromMessageEntry(final MessageEntry entry, final String id){
         return BlogEntryBuilder.newInstance()
                     .setId(id) 
-                    .setContent(entry.getContent())
+                    .setContent(entry.getContent().or(""))
                     .build();
         
     }

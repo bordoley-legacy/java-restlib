@@ -17,17 +17,9 @@
 
 package restlib.data;
 
-import static org.junit.Assert.assertEquals;
 
-import java.util.List;
-
-import org.junit.Test;
-
-import restlib.test.AbstractValueObjectTest;
-
-import com.google.common.collect.ImmutableList;
-
-public final class CacheDirectiveTest extends AbstractValueObjectTest<CacheDirective> {   
+public final class CacheDirectiveTest {   
+    /*
     @Test (expected = IllegalArgumentException.class)
     public void maxAge_withNegativeAge() {
         CacheDirective.maxAge(-1);
@@ -137,6 +129,6 @@ public final class CacheDirectiveTest extends AbstractValueObjectTest<CacheDirec
                 CacheDirective.create("test2", "cool"),  
                 CacheDirective.create("test1", "test another line"),
                 CacheDirective.create("test2", "test another line"));
-    }
+    }*/
 }
  

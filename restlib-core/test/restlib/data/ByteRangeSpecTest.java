@@ -17,15 +17,8 @@
 
 package restlib.data;
 
-import java.util.List;
 
-import org.junit.Test;
-
-import restlib.test.AbstractValueObjectTest;
-
-import com.google.common.collect.ImmutableList;
-
-public final class ByteRangeSpecTest extends AbstractValueObjectTest<ByteRangeSpec> {
+public final class ByteRangeSpecTest {/*
     @Test(expected = IllegalArgumentException.class)
     public void of_firstByteLessThanZero() {
         ByteRangeSpec.range(-1, 10);
@@ -47,5 +40,5 @@ public final class ByteRangeSpecTest extends AbstractValueObjectTest<ByteRangeSp
                     ByteRangeSpec.startingAt(11),
                     ByteRangeSpec.suffix(500),
                     ByteRangeSpec.suffix(600));
-    }
+    }*/
 }

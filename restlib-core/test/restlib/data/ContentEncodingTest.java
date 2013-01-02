@@ -17,20 +17,7 @@
 
 package restlib.data;
 
-import java.util.List;
 
-import restlib.test.AbstractValueObjectTest;
+public final class ContentEncodingTest {
 
-import com.google.common.collect.ImmutableList;
-
-public final class ContentEncodingTest extends AbstractValueObjectTest<ContentEncoding>{
-    @Override
-    protected List<ContentEncoding> newTestSet() {
-        return ImmutableList.of(
-                ContentEncoding.ANY,
-                ContentEncoding.COMPRESS,
-                ContentEncoding.DEFLATE,
-                ContentEncoding.GZIP,
-                ContentEncoding.NONE);
-    }
 }

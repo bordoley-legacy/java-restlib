@@ -26,9 +26,11 @@ import restlib.serializable.atom.AtomFeed;
 import restlib.serializable.atom.AtomLink;
 import restlib.serializable.atom.AtomPerson;
 
+import com.google.common.base.Optional;
+
 public final class MessageEntry extends AtomEntryWrapper<String> {
     public static final class Builder {
-        private final AtomEntryBuilder<String> atomEntryBuilder = AtomEntryBuilder.newInstance("");
+        private final AtomEntryBuilder<String> atomEntryBuilder = AtomEntryBuilder.newInstance();
         
         private Builder(){}
         
@@ -111,7 +113,7 @@ public final class MessageEntry extends AtomEntryWrapper<String> {
     }
 
     @Override
-    public String getContent() {
-        return (String) this.delegate().getContent();
+    public Optional<String> getContent() {
+        return (Optional<String>) this.delegate().getContent();
     }
 }

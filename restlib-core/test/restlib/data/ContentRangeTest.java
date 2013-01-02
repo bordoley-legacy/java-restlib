@@ -17,19 +17,6 @@
 
 package restlib.data;
 
-import java.util.List;
 
-import restlib.test.AbstractValueObjectTest;
-
-import com.google.common.collect.ImmutableList;
-
-public final class ContentRangeTest extends AbstractValueObjectTest<ContentRange> {
-    @Override
-    protected List<ContentRange> newTestSet() {
-        return ImmutableList.of(
-                ContentRange.NONE,
-                ContentRange.byteRange(0, 10, 100),
-                ContentRange.byteRange(0, 20, 100),
-                ContentRange.byteRange(0, 20, 200));
-    }
+public final class ContentRangeTest {
 }
