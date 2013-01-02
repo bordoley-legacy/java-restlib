@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
 import restlib.data.CacheDirective;
@@ -114,20 +113,10 @@ public abstract class Response {
      */
     public abstract Optional<EntityTag> entityTag();
 
-    @Override
-    public final boolean equals(@Nullable final Object obj) {
-        return super.equals(obj);
-    }
-
     /**
      * Returns the date this response expires.
      */
     public abstract Optional<HttpDate> expires();
-    
-    @Override
-    public final int hashCode() {
-        return super.hashCode();
-    }
     
     /**
      * Returns the date the entity of this response was last modified.

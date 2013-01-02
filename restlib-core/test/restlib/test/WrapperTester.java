@@ -33,7 +33,7 @@ public final class WrapperTester<T> extends MethodTester<T>{
     @Override
     protected void doTest(final Method method, final T test, final Object[] args) {
         try {
-            assertEquals(
+            assertEquals(method.getName(),
                     method.invoke(test, args),
                     method.invoke(wrapper.apply(test), args));
         } catch (final Exception e) {

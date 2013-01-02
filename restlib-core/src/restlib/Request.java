@@ -53,7 +53,6 @@ import static restlib.data.HttpHeaders.VIA;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
 import restlib.data.CacheDirective;
@@ -329,11 +328,6 @@ public abstract class Request {
      * Returns the request entity as an object if available.
      */
     public abstract Optional<Object> entity();
-
-    @Override
-    public final boolean equals(@Nullable final Object obj) {
-        return super.equals(obj);
-    }
     
     /**
      * Returns the set of client Expectations.
@@ -344,11 +338,6 @@ public abstract class Request {
      * Returns the from email address of the request.
      */
     public abstract Optional<EmailAddress> from();
-
-    @Override
-    public final int hashCode() {
-        return super.hashCode();
-    }
     
     /**
      * Returns the maximum number of times this request may be forwarded, if specified.

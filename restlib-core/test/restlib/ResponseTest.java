@@ -41,7 +41,6 @@ import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.testing.EqualsTester;
 import com.google.common.testing.NullPointerTester;
 
 /**
@@ -159,71 +158,6 @@ public final class ResponseTest {
     }
     
     @Test
-    public void testEquals() {
-        final ResponseBuilder builder = Response.builder();
-        new EqualsTester()
-            .addEqualityGroup(
-                    builder.build(), 
-                    builder.build())
-            .addEqualityGroup(       
-                    builder.addAcceptedRangeUnit(RangeUnit.BYTES).build(),
-                    builder.build())
-            .addEqualityGroup(
-                    builder.addAllowedMethod(Method.GET).build(),
-                    builder.build())
-            .addEqualityGroup(
-                    builder.addAuthenticationChallenge(ChallengeMessage.basicAuthenticationChallenge("www.example.org")).build(),
-                    builder.build())
-            .addEqualityGroup(
-                    builder.addCacheDirective(CacheDirective.MUST_REVALIDATE).build(),
-                    builder.build())
-            .addEqualityGroup(
-                    builder.addCustomHeader(Header.create("X-Test"), "test").build(),
-                    builder.build())
-            .addEqualityGroup(      
-                    builder.addProxyAuthenticationChallenge(ChallengeMessage.basicAuthenticationChallenge("www.example.org")).build(),
-                    builder.build())
-            .addEqualityGroup(           
-                    builder.addVaryHeader(HttpHeaders.ACCEPT).build(),
-                    builder.build())
-            .addEqualityGroup(       
-                    builder.addWarning(Warning.create(200, "www.example.com", "warn text")).build(),
-                    builder.build())
-            .addEqualityGroup(   
-                    builder.setAge(10).build(),
-                    builder.build())
-            .addEqualityGroup(          
-                    builder.setConnectionInfo(
-                            ConnectionInfo.builder().addConnectionOption(ConnectionOption.CLOSE).build()).build(),
-                    builder.build())
-            .addEqualityGroup(
-                    builder.setContentInfo(
-                            ContentInfo.builder().setMediaRange(MediaRanges.APPLICATION_JSON).build()))        
-            .addEqualityGroup(             
-                    builder.setDate(HttpDate.now()).build(),
-                    builder.build())
-            .addEqualityGroup(       
-                    builder.setEntity("test").build(),
-                    builder.build())
-            .addEqualityGroup(             
-                    builder.setExpires(HttpDate.create(Long.MAX_VALUE)).build(),
-                    builder.build())
-            .addEqualityGroup(                 
-                    builder.setLastModified(HttpDate.now()).build(),
-                    builder.build())
-            .addEqualityGroup(                  
-                    builder.setRetryAfterDate(HttpDate.create(Long.MAX_VALUE)).build(), 
-                    builder.build())
-            .addEqualityGroup(                   
-                    builder.setServer(RESTLIB).build(),
-                    builder.build())
-            .addEqualityGroup(  
-                    builder.setStatus(Status.CLIENT_ERROR_GONE).build(),
-                    builder.build())
-            .testEquals();    
-    }
-    
-    @Test
     public void testNulls() {
         final NullPointerTester tester = 
                 new NullPointerTester()
@@ -245,7 +179,6 @@ public final class ResponseTest {
                     }                   
                 })
                 .useDefaultInstances()
-                .includingEquals()
                 .executeTests(
                     builder.build(),
                     builder.addAcceptedRangeUnit(RangeUnit.BYTES).build(),

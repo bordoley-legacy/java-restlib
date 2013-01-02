@@ -88,7 +88,6 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
-import com.google.common.testing.EqualsTester;
 import com.google.common.testing.NullPointerTester;
 
 /**
@@ -187,81 +186,7 @@ public final class RequestTest {
     @Test(expected = IllegalArgumentException.class)
     public void testBuilder$setMaxForwards_withNegativeValue() {
         Request.builder().setMaxForwards(-1);
-    }
-    
-    @Test
-    public void testEquals() {
-        final RequestBuilder builder = Request.builder();
-        new EqualsTester()
-            .addEqualityGroup(
-                    builder.setUri(Uri.parse("http://www.example.com?query")).build(),
-                    builder.build())     
-            .addEqualityGroup(
-                    builder.addCacheDirective(CacheDirective.MAX_STALE).build(),
-                    builder.build())
-            .addEqualityGroup(
-                    builder.addCacheDirectives(ImmutableList.of(CacheDirective.MUST_REVALIDATE)).build(),
-                    builder.build())    
-            .addEqualityGroup(
-                    builder.addCustomHeader(Header.create("X-Test"), "").build(),
-                    builder.build())
-            .addEqualityGroup(
-                    builder.addExpectation(Expectation.EXPECTS_100_CONTINUE).build(),
-                    builder.build())  
-            .addEqualityGroup(
-                    builder.addExpectations(
-                            ImmutableList.<Expectation>of(
-                                    Expectation.create(
-                                            ImmutableMultimap.of("token", "token")))).build(),
-                    builder.build())
-            .addEqualityGroup( 
-                    builder.addPragmaCacheDirective(CacheDirective.MAX_STALE).build(),
-                    builder.build())
-            .addEqualityGroup(
-                    builder.addPragmaCacheDirectives(ImmutableList.of(CacheDirective.MUST_REVALIDATE)).build(),
-                    builder.build())
-            .addEqualityGroup(
-                    builder.setAuthorizationCredentials(ChallengeMessage.base64ChallengeMessage("basic", "ABC=")).build(),
-                    builder.build())
-            .addEqualityGroup(
-                    builder.setConnectionInfo(
-                            ConnectionInfo.builder().addConnectionOption(ConnectionOption.KEEP_ALIVE).build()).build(),
-                    builder.build())
-            .addEqualityGroup(
-                    builder.setContentInfo(
-                            ContentInfo.builder().setLength(10).build()).build(),
-                    builder.build())      
-            .addEqualityGroup(
-                    builder.setEntity("test").build(),
-                    builder.build())
-            .addEqualityGroup( 
-                    builder.setFrom(EmailAddress.parse("test@example.org")).build(),
-                    builder.build())
-            .addEqualityGroup(
-                    builder.setMaxForwards(10).build(), 
-                    builder.build())       
-            .addEqualityGroup(
-                    builder.setMethod(Method.PATCH).build(),
-                    builder.build())
-            .addEqualityGroup(
-                    builder.setPreconditions(
-                            RequestPreconditions.builder().setIfRange(EntityTag.strongTag("abc")).build()).build(),
-                    builder.build())
-            .addEqualityGroup(
-                    builder.setPreferences(
-                            ClientPreferences.builder().addAcceptedMediaRange(Preference.create(MediaRanges.APPLICATION_ATOM)).build()).build(),
-                    builder.build())
-            .addEqualityGroup(
-                    builder.setProxyAuthorizationCredentials(ChallengeMessage.base64ChallengeMessage("basic", "ABC=")).build(),
-                    builder.build())
-            .addEqualityGroup(
-                    builder.setReferrer(Uri.parse("http://www.example.com")).build(),
-                    builder.build())       
-            .addEqualityGroup(
-                    builder.setUserAgent(RESTLIB).build(),
-                    builder.build())
-            .testEquals();
-    }
+    } 
     
     @Test
     public void testNulls() {
@@ -395,7 +320,6 @@ public final class RequestTest {
                     }                   
                 })
             .useDefaultInstances()
-            .includingEquals()
             .executeTests(
                     //builder.build(),
                     builder.setUri(Uri.parse("http://www.example.com?query")).build(),
