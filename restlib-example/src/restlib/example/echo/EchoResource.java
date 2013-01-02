@@ -21,10 +21,13 @@ import restlib.Request;
 import restlib.Response;
 import restlib.data.HttpDate;
 import restlib.data.Status;
+import restlib.server.FutureResponses;
 import restlib.server.Resource;
 import restlib.server.Route;
 
 import com.google.common.base.Preconditions;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 
 public final class EchoResource implements Resource {
     private final Route route;
@@ -42,11 +45,11 @@ public final class EchoResource implements Resource {
         return this.route;
     }
 
-    public Response handle(final Request request) {
-        return Status.INFORMATIONAL_CONTINUE.toResponse();
+    public ListenableFuture<Response> handle(final Request request) {
+        return FutureResponses.INFORMATIONAL_CONTINUE;
     }
 
-    public Response acceptMessage(final Request request, final Object message) {
+    public ListenableFuture<Response> acceptMessage(final Request request, final Object message) {
         Preconditions.checkNotNull(request);
         Preconditions.checkNotNull(message);
         final String response =
@@ -55,11 +58,12 @@ public final class EchoResource implements Resource {
                         .append(message.toString())
                         .toString();
         
-        return Response.builder()
-                .setDate(HttpDate.create(System.currentTimeMillis()))
-                .setEntity(response) 
-                .setStatus(Status.SUCCESS_OK)
-                .setLocation(request.uri())
-                .build();
+        return Futures.immediateFuture(
+                    Response.builder()
+                        .setDate(HttpDate.create(System.currentTimeMillis()))
+                        .setEntity(response) 
+                        .setStatus(Status.SUCCESS_OK)
+                        .setLocation(request.uri())
+                        .build());
     }
 }

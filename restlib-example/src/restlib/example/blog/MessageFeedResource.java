@@ -33,6 +33,8 @@ import restlib.server.Route;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 
 public final class MessageFeedResource extends AtomFeedResource<MessageFeed, MessageEntry>{
     public static final class Builder {
@@ -132,7 +134,7 @@ public final class MessageFeedResource extends AtomFeedResource<MessageFeed, Mes
     }
 
     @Override
-    protected Response get(final Request request) {
+    protected ListenableFuture<Response> get(final Request request) {
         final Iterable<BlogEntry> entries = this.blogStore.getAllEntries();
 
         final MessageFeed.Builder builder = MessageFeed.builder()
@@ -150,12 +152,14 @@ public final class MessageFeedResource extends AtomFeedResource<MessageFeed, Mes
                             this.atomEntryResource().getLinks(entryUri)));
         }
 
-        return Response.builder().setStatus(Status.SUCCESS_OK)
-                .setEntity(builder.build()).build();
+        return Futures.immediateFuture(
+                    Response.builder()
+                        .setStatus(Status.SUCCESS_OK)
+                        .setEntity(builder.build()).build());
     }
     
     @Override
-    protected Response post(final Request request,
+    protected ListenableFuture<Response> post(final Request request,
             final MessageFeed message) {
         final MessageFeed.Builder feedBuilder = MessageFeed.builder();
 
@@ -171,8 +175,10 @@ public final class MessageFeedResource extends AtomFeedResource<MessageFeed, Mes
                             this.atomEntryResource().getLinks(entryUri)));
         }
         
-        return Response.builder().setStatus(Status.SUCCESS_CREATED)
-                .setEntity(feedBuilder.build()).build();
+        return Futures.immediateFuture(
+                    Response.builder()
+                        .setStatus(Status.SUCCESS_CREATED)
+                        .setEntity(feedBuilder.build()).build());
     }
 
 

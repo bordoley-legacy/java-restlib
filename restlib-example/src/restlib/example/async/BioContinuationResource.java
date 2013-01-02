@@ -15,7 +15,7 @@
  */
 
 
-package restlib.example.continuation;
+package restlib.example.async;
 
 import restlib.Request;
 import restlib.Response;

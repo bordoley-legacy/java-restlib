@@ -15,7 +15,7 @@
  */
 
 
-package restlib.example.continuation;
+package restlib.example.async;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -24,15 +24,15 @@ import restlib.Request;
 import restlib.Response;
 import restlib.data.Form;
 import restlib.data.Status;
-import restlib.server.Continuation;
-import restlib.server.Continuations;
+import restlib.server.FutureResponses;
 import restlib.server.Resource;
 import restlib.server.Route;
 
-import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Multimap;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.SettableFuture;
 
 public final class ContinuationResource implements Resource {
     public static ContinuationResource newInstance(final Route route) {
@@ -47,46 +47,37 @@ public final class ContinuationResource implements Resource {
     }
 
     @Override
-    public Response acceptMessage(final Request request, final Object message) {
-        return Continuations.suspend(
-                getContinuation(Status.SUCCESS_OK, 500));
+    public ListenableFuture<Response> acceptMessage(final Request request, final Object message) {
+        return delayedResponse(Status.SUCCESS_OK, 500);
     }
     
-    private Continuation getContinuation(final Status status, final long waitTime) {
-        return new Continuation() {
-            final Timer timer = new Timer();
-            
-            public void cancel() {
+    private ListenableFuture<Response> delayedResponse(final Status status, final long waitTime) {
+        final Timer timer = new Timer();
+        final SettableFuture<Response> response = SettableFuture.create();
+        final TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
                 timer.cancel();
-            }
-            
-            public void resume(final Function<Response, Void> responseHandler) {
-                final TimerTask task = new TimerTask() {
-                    @Override
-                    public void run() {
-                        timer.cancel();
-                        responseHandler.apply(status.toResponse());                     
-                    }};               
-                timer.schedule(task, waitTime);
-            }
-        };
+                response.set(status.toResponse());                     
+            }};               
+        timer.schedule(task, waitTime);
+        return response;
     }
 
     @Override
-    public Response handle(final Request request) {
+    public ListenableFuture<Response> handle(final Request request) {
         final Multimap<String, String> form;
         try {
             form = Form.parse(request.uri().query());
         } catch (final IllegalArgumentException e) {
-            return Status.CLIENT_ERROR_BAD_REQUEST.toResponse();
+            return FutureResponses.CLIENT_ERROR_BAD_REQUEST;
         }
         
         final boolean timeout = 
                 Boolean.parseBoolean(Iterables.getFirst(form.get("timeout"), ""));
         final long waitTime = timeout ? 20000 : 500;
         
-         return Continuations.suspend(
-                    getContinuation(Status.INFORMATIONAL_CONTINUE, waitTime));
+         return delayedResponse(Status.INFORMATIONAL_CONTINUE, waitTime);
     }
 
     @Override

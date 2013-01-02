@@ -21,15 +21,15 @@ import restlib.Request;
 import restlib.Response;
 import restlib.data.ExtensionHeaders;
 import restlib.data.HttpHeaders;
-import restlib.data.Status;
+import restlib.example.async.BioContinuationResource;
 import restlib.example.blog.bio.BlogBuilder;
-import restlib.example.continuation.BioContinuationResource;
 import restlib.example.echo.BioEchoResource;
 import restlib.example.echo.EchoResource;
 import restlib.ext.servlet.ServletConnector;
 import restlib.server.ApplicationSuppliers;
 import restlib.server.Authorizer;
 import restlib.server.BasicAuthorizer;
+import restlib.server.FutureResponses;
 import restlib.server.RequestFilters;
 import restlib.server.Resource;
 import restlib.server.Resources;
@@ -40,6 +40,7 @@ import restlib.server.bio.BioResource;
 
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
+import com.google.common.util.concurrent.ListenableFuture;
 
 @SuppressWarnings("serial")
 public final class ExampleServlet extends ServletConnector { 
@@ -50,10 +51,10 @@ public final class ExampleServlet extends ServletConnector {
                     private final String user = "test";
                 
                     @Override
-                    protected Response authenticate(final Request request, final String user, final String pwd) {
+                    protected ListenableFuture<Response> authenticate(final Request request, final String user, final String pwd) {
                         return (this.user.equals(user) && this.pwd.equals(pwd)) ? 
-                                    Status.SUCCESS_OK.toResponse() :
-                                        Status.CLIENT_ERROR_UNAUTHORIZED.toResponse();
+                                    FutureResponses.SUCCESS_OK :
+                                        FutureResponses.CLIENT_ERROR_UNAUTHORIZED;
                     }
             };
         

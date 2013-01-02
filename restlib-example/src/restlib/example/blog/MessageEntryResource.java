@@ -27,10 +27,13 @@ import restlib.example.blog.dao.BlogEntryBuilder;
 import restlib.example.blog.dao.BlogEntryHelpers;
 import restlib.example.blog.dao.BlogStore;
 import restlib.example.blog.serializable.MessageEntry;
+import restlib.server.FutureResponses;
 import restlib.server.Route;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 
 public final class MessageEntryResource extends AtomEntryResource<MessageEntry>{
     public static final class Builder {
@@ -105,23 +108,21 @@ public final class MessageEntryResource extends AtomEntryResource<MessageEntry>{
     }
     
     @Override
-    protected Response delete(final Request request) {
+    protected ListenableFuture<Response> delete(final Request request) {
         final BlogEntryBuilder builder = BlogEntryBuilder.newInstance();
         this.route().populateObject(request.uri().path(), builder);
         final BlogEntry requestedBlogEntry = builder.build();
         
         if (this.blogStore.getEntry(requestedBlogEntry) != null) {
             this.blogStore.deleteEntry(requestedBlogEntry);
-            return Response.builder()
-                    .setStatus(Status.SUCCESS_NO_CONTENT)
-                    .build();
+            return FutureResponses.SUCCESS_NO_CONTENT;
         }
         
-        return Status.CLIENT_ERROR_NOT_FOUND.toResponse();
+        return FutureResponses.CLIENT_ERROR_NOT_FOUND;
     }
 
     @Override
-    protected Response get(final Request request) {
+    protected ListenableFuture<Response> get(final Request request) {
         final BlogEntryBuilder builder = BlogEntryBuilder.newInstance();
         this.route().populateObject(request.uri().path(), builder);
         final BlogEntry requestedBlogEntry = builder.build();
@@ -135,15 +136,17 @@ public final class MessageEntryResource extends AtomEntryResource<MessageEntry>{
                             this.getId(request.uri(), entry.getCreated()), 
                             this.getLinks(request.uri()));
         
-            return Response.builder().setStatus(Status.SUCCESS_OK)
-                    .setEntity(message).build();
+            return Futures.immediateFuture(
+                        Response.builder()
+                            .setStatus(Status.SUCCESS_OK)
+                            .setEntity(message).build());
         }
 
-        return Status.CLIENT_ERROR_NOT_FOUND.toResponse();
+        return FutureResponses.CLIENT_ERROR_NOT_FOUND;
     }
 
     @Override
-    protected Response put(final Request request, final MessageEntry message) {
+    protected ListenableFuture<Response> put(final Request request, final MessageEntry message) {
         final String id = this.route().getParameters(request.uri().path()).get("id");        
         final BlogEntry requestedBlogEntry = BlogEntryHelpers.fromMessageEntry(message, id);           
         
@@ -156,13 +159,14 @@ public final class MessageEntryResource extends AtomEntryResource<MessageEntry>{
                             this.getId(request.uri(), entry.getCreated()),
                             this.getLinks(request.uri()));
 
-            return Response.builder()
-                    .setStatus(Status.SUCCESS_NO_CONTENT)
-                    .setEntity(messageEntry)
-                    .build();
+            return Futures.immediateFuture(
+                    Response.builder()
+                        .setStatus(Status.SUCCESS_OK)
+                        .setEntity(messageEntry)
+                        .build());
         }
         
-        return Status.CLIENT_ERROR_NOT_FOUND.toResponse();
+        return FutureResponses.CLIENT_ERROR_NOT_FOUND;
     }
 
     @Override
