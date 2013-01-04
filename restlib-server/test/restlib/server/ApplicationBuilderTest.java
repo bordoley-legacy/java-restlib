@@ -51,7 +51,7 @@ public final class ApplicationBuilderTest {
         final Function<Request, Request> filter1 = 
                 RequestFilters.queryFilter(ImmutableList.of(HttpHeaders.AUTHORIZATION));
         final Function<Request, Request> filter2 =
-                ExtensionFilter.getDefaultInstance();
+                ExtensionRequestFilter.getDefaultInstance();
         
         final Application application = 
                 ApplicationBuilder.newInstance()

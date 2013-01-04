@@ -57,15 +57,15 @@ import com.google.common.collect.Iterables;
  * of the request with the media range corresponding to the extension.
  *       
  */
-final class ExtensionFilter implements Function<Request,Request> {
-    private static final ExtensionFilter DEFAULT = ExtensionFilter.newInstance(ExtensionMap.DEFAULT_EXTENSIONS);
+final class ExtensionRequestFilter implements Function<Request,Request> {
+    private static final ExtensionRequestFilter DEFAULT = ExtensionRequestFilter.newInstance(ExtensionMap.DEFAULT_EXTENSIONS);
 
     private static final Pattern EXT_PATTERN = Pattern.compile("(.*?)(\\.([^\\.]+$))?");
 
     /**
      * Returns an ExtensionFilter instance using the default ExtensionMap.
      */
-    public static ExtensionFilter getDefaultInstance() {
+    public static ExtensionRequestFilter getDefaultInstance() {
         return DEFAULT;
     }
 
@@ -75,14 +75,14 @@ final class ExtensionFilter implements Function<Request,Request> {
      * @return The ExtensionFilter.
      * @throws NullPointerException If {@code extensionMap} is null.
      */
-    public static ExtensionFilter newInstance(final ExtensionMap extensionMap) {
+    public static ExtensionRequestFilter newInstance(final ExtensionMap extensionMap) {
         Preconditions.checkNotNull(extensionMap);
-        return new ExtensionFilter(extensionMap);
+        return new ExtensionRequestFilter(extensionMap);
     }
 
     private final ExtensionMap extensionMap;
 
-    ExtensionFilter(final ExtensionMap extensionMap) {
+    ExtensionRequestFilter(final ExtensionMap extensionMap) {
         this.extensionMap = extensionMap;
     }
 

@@ -65,14 +65,14 @@ public final class ExtensionFilterTest {
 
     @Test(expected = NullPointerException.class)
     public void newInstance_nullExtensionMap() {
-        ExtensionFilter.newInstance(null);
+        ExtensionRequestFilter.newInstance(null);
     }
 
     @Test
     public void apply_uriWithExtension() {      
         for (final Uri uri : URI_WITH_EXTENSION.keySet()) {
             final Request request = Request.builder().setUri(uri).build();
-            final Request filteredRequest = ExtensionFilter.getDefaultInstance().apply(request);
+            final Request filteredRequest = ExtensionRequestFilter.getDefaultInstance().apply(request);
             
             assertTrue(uri.toString(), filteredRequest.uri().equals(URI_WITH_EXTENSION.get(uri)));
             assertTrue(
@@ -86,7 +86,7 @@ public final class ExtensionFilterTest {
     public void apply_uriWithOutExtension() {      
         for (final Uri uri : URI_WITHOUT_EXTENSION) {
             final Request request = Request.builder().setUri(uri).build();
-            final Request filteredRequest = ExtensionFilter.getDefaultInstance().apply(request);
+            final Request filteredRequest = ExtensionRequestFilter.getDefaultInstance().apply(request);
             
             assertTrue(request.equals(filteredRequest));
         }

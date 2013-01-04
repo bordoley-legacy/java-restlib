@@ -66,7 +66,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
 
-final class QueryFilter implements Function<Request, Request> {       
+final class QueryRequestFilter implements Function<Request, Request> {       
     private static Request withHeaders(
     		final Request request, 
     		final Method method,
@@ -375,7 +375,7 @@ final class QueryFilter implements Function<Request, Request> {
                 }  
     };
     
-    QueryFilter(final Set<Header> allowedHeaders){   
+    QueryRequestFilter(final Set<Header> allowedHeaders){   
         this.allowedHeaders = allowedHeaders;
     }
     
