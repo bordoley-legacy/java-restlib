@@ -11,7 +11,6 @@ import com.google.common.collect.Iterables;
 final class MethodRequestFilter implements Function<Request, Request> {
 
     public MethodRequestFilter() {
-        // TODO Auto-generated constructor stub
     }
     
     @Override
