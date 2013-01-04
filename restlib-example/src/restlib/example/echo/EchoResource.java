@@ -20,6 +20,7 @@ package restlib.example.echo;
 import restlib.Request;
 import restlib.Response;
 import restlib.data.HttpDate;
+import restlib.data.Method;
 import restlib.data.Status;
 import restlib.server.FutureResponses;
 import restlib.server.Resource;
@@ -46,7 +47,19 @@ public final class EchoResource implements Resource {
     }
 
     public ListenableFuture<Response> handle(final Request request) {
-        return FutureResponses.INFORMATIONAL_CONTINUE;
+        Preconditions.checkNotNull(request);
+        
+        if (request.method().equals(Method.POST) || request.method().equals(Method.PUT)) {
+            return FutureResponses.INFORMATIONAL_CONTINUE;
+        } else {
+            return Futures.immediateFuture(
+                    Response.builder()
+                    .setDate(HttpDate.create(System.currentTimeMillis()))
+                    .setEntity(request.toString())
+                    .setStatus(Status.SUCCESS_OK)
+                    .setLocation(request.uri())
+                    .build());
+        }
     }
 
     public ListenableFuture<Response> acceptMessage(final Request request, final Object message) {
