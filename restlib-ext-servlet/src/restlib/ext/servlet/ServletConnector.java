@@ -24,7 +24,6 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.servlet.GenericServlet;
 import javax.servlet.ServletException;

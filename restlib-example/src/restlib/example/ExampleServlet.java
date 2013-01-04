@@ -69,8 +69,8 @@ public final class ExampleServlet extends ServletConnector {
     private final Function<Request, BioApplication> applicationSupplier;
 
     public ExampleServlet() {        
-        final Route echoWithAuth = Route.startsWith("/example/echo/*/auth");
-        final Route echo = Route.startsWith("/example/echo").exclude(echoWithAuth);
+        //final Route echoWithAuth = Route.startsWith("/example/echo/b/*/auth");
+        final Route echo = Route.startsWith("/example/echo");
         final Route continuation = Route.parse("/example/continuation");
         final Route feed = Route.parse("/example/blog");
         final Route entry = Route.parse("/example/blog/entries/:id");
@@ -86,7 +86,7 @@ public final class ExampleServlet extends ServletConnector {
                                         HttpHeaders.ACCEPT)))
                 .addRequestFilter(RequestFilters.DEFAULT_EXTENSION_FILTER)                       
                 .addResource(BioEchoResource.newInstance(EchoResource.newInstance(echo)))
-                .addResource(echoResourceWithAuth(echoWithAuth))
+                //.addResource(echoResourceWithAuth(echoWithAuth))
                 .addResource(BioContinuationResource.newInstance(continuation))
                 .addResource(blogBuilder.bioEntryResource)
                 .addResource(blogBuilder.bioFeedResource)
