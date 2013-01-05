@@ -304,7 +304,7 @@ public final class MediaRange implements Matcheable<MediaRange>{
         builder.append(this.type).append('/').append(this.subtype);
 
         if (this.charset.isPresent()) {
-            builder.append("; ").append("charset").append('=').append(charset);
+            builder.append("; ").append("charset").append('=').append(charset.get());
         }
         
         if (!this.parameters.isEmpty()) {
